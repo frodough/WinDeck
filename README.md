@@ -4,7 +4,7 @@
 
 It automates the entire setup process—installing Steam, creating a dedicated user, and modifying the Windows Shell—to boot directly into **Steam Big Picture Mode**, bypassing the Windows Explorer desktop entirely for a seamless, console-like experience.
 
-This script is good for users that either cannot run Steam OS, Bazzite, ChimeraOS, etc, because of issues that involve NVidia drivers not being up to snuff in Linux or just do not want to run Linux at all. This will set the user shell as Steams Big Picture mode automatically replacing Windows Explorer, thus giving a true console experience with Steam.
+This script is good for users that either cannot run Steam OS, Bazzite, ChimeraOS, etc, because of issues that involve Nvidia drivers not being up to snuff in Linux or just do not want to run Linux at all. This will set the user shell as Steams Big Picture mode automatically replacing Windows Explorer, thus giving a true console experience with Steam.
 
 **This works best on a fresh Windows installation**
 
