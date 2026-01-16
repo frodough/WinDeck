@@ -19,7 +19,7 @@ $config = @{
 	UninstallKey64 = "hklm\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
 	UninstallKey32 = "hklm\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
 	SteamInstallerPath = join-path $env:userprofile "\Downloads\Steam.exe"
-	SteamInstallerUrl = "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+	SteamUrl = "https://store.steampowered.com/about/download"
 	AutoLogon = "hklm\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 	DisableLs = "hklm\SOFTWARE\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51"
 }
@@ -119,7 +119,13 @@ function restart {
 
 function installsteam {
 	write-host "Downloading Steam client: " -nonewline
-	invoke-webrequest -uri $($config.SteamInstallerUrl) -outfile $($config.SteamInstallerPath)
+	$download = invoke-restmethod -uri $($config.SteamUrl)
+	$download = [string]$download
+	
+	$pattern = "https://cdn\.[^./]+\.steamstatic\.com/client/installer/SteamSetup\.exe"
+	$installer = ([regex]::matches($download, $pattern)).value[0]
+	
+	invoke-webrequest -uri $($installer) -outfile $($config.SteamInstallerPath)
 	write-host "Success" -fore green
 	
 	write-host "Installing Steam client: " -nonewline
@@ -255,4 +261,5 @@ else {
 	else {
 		write-host "Steam not detected! Please install Steam and run script again" -fore yellow
 	}
+
 }
