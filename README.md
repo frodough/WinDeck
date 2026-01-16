@@ -48,7 +48,7 @@ If you wish to return the PC to a standard desktop experience:
 
 ### To restore the Desktop for the Kiosk user:
 1.  Press `CTRL + ALT + DEL` and open **Task Manager**.
-2.  File > Run new task > Type `regedit` (Check "Create with admin privileges").
+2.  File > Run new task > Type `regedit`.
 3.  Navigate to `HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\Winlogon`.
 4.  Delete the `Shell` entry.
 5.  Sign out and sign back in.
