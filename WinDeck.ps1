@@ -194,15 +194,118 @@ function disablelsonsleep {
 	}
 }
 
+function startexplorer {
+	## Generate sed file 
+	$sed = 
+@'
+	[Version]
+	Class=IEXPRESS
+	SEDVersion=3
+	[Options]
+	PackagePurpose=InstallApp
+	ShowInstallProgramWindow=0
+	HideExtractAnimation=1
+	UseLongFileName=1
+	InsideCompressed=0
+	CAB_FixedSize=0
+	CAB_ResvCodeSigning=0
+	RebootMode=N
+	InstallPrompt=%InstallPrompt%
+	DisplayLicense=%DisplayLicense%
+	FinishMessage=%FinishMessage%
+	TargetName=%TargetName%
+	FriendlyName=%FriendlyName%
+	AppLaunched=%AppLaunched%
+	PostInstallCmd=%PostInstallCmd%
+	AdminQuietInstCmd=%AdminQuietInstCmd%
+	UserQuietInstCmd=%UserQuietInstCmd%
+	SourceFiles=SourceFiles
+	[Strings]
+	InstallPrompt=
+	DisplayLicense=
+	FinishMessage=
+	TargetName=C:\Temp\WinDeck\StartExplorer.exe
+	FriendlyName=Test
+	AppLaunched=powershell -ep bypass .\StartExplorer.ps1
+	PostInstallCmd=<None>
+	AdminQuietInstCmd=
+	UserQuietInstCmd=
+	FILE0="StartExplorer.ps1"
+	[SourceFiles]
+	SourceFiles0=C:\Temp\WinDeck\
+	[SourceFiles0]
+	%FILE0%=
+'@
+
+	## Generate helper script
+	$helper = 
+@'
+    while ($true) {
+        $steam = get-process -name Steam -erroraction silentlycontinue
+
+        if ($null -eq $steam) {
+		    start-process C:\Windows\explorer.exe  
+            break
+        }
+        sleep -seconds 1
+    }
+'@	
+	## Cleaning up white space on export
+	$sed = $sed -replace '(?m)^\s+', ''
+	$helper = $helper -replace '(?m)^ {4}', ''
+	$answer = read-host "Do you want to generate a helper file to start explorer from Steam? [y/n]"
+
+    if ($answer -match "^y$") {
+        ## Check for Temp directory
+		if (!(test-path $($config.HelperDir))) {
+			new-item -path "C:\Temp" -itemtype directory -name "WinDeck" -force | out-null
+			set-content -path "$($config.HelperDir)\startexplorer.sed" -value $sed -encoding default
+			$helper | out-file -filepath "$($config.HelperDir)\StartExplorer.ps1"
+
+			try {
+				## Generate iexpress executable to use in Steam
+				start-process iexpress -argumentlist "/N $($config.HelperDir)\startexplorer.sed"
+				write-host "Helper file generated: " -nonewline
+				write-host "$($config.HelperDir)\StartExplorer.exe" -fore cyan
+				write-host "How to use: Open Steam goto Games menu, choose Add a Non-Steam Game to My Library" -fore yellow
+				write-host "Select browse and navigate to $($config.HelperDir)\StartExplorer.exe, make sure there is a checkmark next to it" -fore yellow
+				write-host "Click on Add Selected Programs." -fore yellow
+				write-host "Run this before exiting Steam for Explorer to reinitialize" -fore yellow
+			}
+			catch {
+				write-host $_.exception.message -fore red
+			}
+		}
+		else {
+			set-content -path "$($config.HelperDir)\startexplorer.sed" -value $sed -encoding default
+			$helper | out-file -filepath "$($config.HelperDir)\StartExplorer.ps1"
+
+			try {
+				## Generate iexpress executable to use in Steam
+				start-process iexpress -argumentlist "/N $($config.HelperDir)\startexplorer.sed"
+				write-host "Helper file generated: " -nonewline
+				write-host "$($config.HelperDir)\StartExplorer.exe" -fore cyan
+				write-host "How to use: Open Steam goto Games menu, choose Add a Non-Steam Game to My Library" -fore yellow
+				write-host "Select browse and navigate to $($config.HelperDir)\StartExplorer.exe, make sure there is a checkmark next to it" -fore yellow
+				write-host "Click on Add Selected Programs." -fore yellow
+				write-host "Run this before exiting Steam for Explorer to reinitialize" -fore yellow
+			}
+			catch {
+				write-host $_.exception.message -fore red
+			}
+		}
+	}
+}
+
 write-host "$intro`n" -fore cyan
 write-host "Checking registry for Steam entry: " -nonewline
 $steamReg = get-itemproperty registry::$($reg) -ea silentlycontinue | ? { $_.displayname -eq "Steam"} 
-$steamInstall = getsteam
 
 if ($steamReg) {
     write-host "Success" -fore green
 
     write-host "Checking for path for Steam executable: " -nonewline
+	$steamInstall = getsteam
     if (test-path $steamInstall) {
         write-host "Executable found at $($steamInstall)" -fore yellow
         sleep -seconds 1
@@ -218,6 +321,9 @@ if ($steamReg) {
 		
 		## Setting gpo to disable lockscreen on wake from sleep
 		disablelsonsleep
+
+		## Generate helper
+		startexplorer
 		
 		## Restarting to apply settings
 		restart
@@ -250,6 +356,9 @@ else {
 			
 			## Setting gpo to disable lockscreen on wake from sleep
 			disablelsonsleep
+
+			## Generate helper
+			startexplorer
 		
 			## Restarting to apply settings
 			restart
