@@ -33,7 +33,7 @@ This script is good for users that either cannot run Steam OS, Bazzite, ChimeraO
 3.  Follow the interactive prompts:
     * Win Deck will verify the Steam installation.
     * It will create the local user account.
-    * Type `y` to restart the computer and enter "Win Deck" mode.
+    * Reboot the machine.
 
 ## 🔧 How Win Deck Works
 
@@ -44,7 +44,7 @@ It injects the custom Shell configuration into the `Winlogon` key of this templa
 
 ## ⚠️ Recovery / Uninstall
 
-If you wish to return the PC to a standard desktop experience:
+The script has an option to generate a helper file to auto enable Windows Explorer on exit from Steam, however if you would like to do this normally the steps are provided below:
 
 ### To restore the Desktop for the Kiosk user:
 1.  Press `CTRL + ALT + DEL` and open **Task Manager**.
