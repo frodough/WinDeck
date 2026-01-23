@@ -306,6 +306,7 @@ if ($steamReg) {
 
     write-host "Checking for path for Steam executable: " -nonewline
 	$steamInstall = getsteam
+	
     if (test-path $steamInstall) {
         write-host "Executable found at $($steamInstall)" -fore yellow
         sleep -seconds 1
@@ -372,4 +373,5 @@ else {
 	}
 
 }
+
 
