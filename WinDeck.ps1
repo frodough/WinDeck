@@ -371,7 +371,4 @@ else {
 	else {
 		write-host "Steam not detected! Please install Steam and run script again" -fore yellow
 	}
-
 }
-
-
